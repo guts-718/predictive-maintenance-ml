@@ -179,7 +179,74 @@ cycles (t-29) ... (t) -\> predict RUL at cycle t
 This allows deep learning models such as LSTM or GRU networks to learn
 degradation trends.
 
-------------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+## Sliding Window Experiment (Initial Results)
+
+To introduce temporal context into the models, sliding windows of different sizes were generated from the sensor data. Each window represents a sequence of sensor readings across several engine cycles.
+
+For classical machine learning models, each window was flattened into a feature vector and used to predict the Remaining Useful Life (RUL) at the last timestep of the window.
+
+Window sizes tested:
+
+{5, 10, 20, 30, 40}
+
+Models evaluated:
+
+- Linear Regression
+- Random Forest
+- XGBoost
+
+### Results
+
+| Window | LinearRegression | RandomForest | XGBoost |
+|------|------|------|------|
+| 5 | 21.17 | 17.89 | 17.85 |
+| 10 | 20.50 | 18.04 | 17.76 |
+| 20 | 18.66 | 17.99 | 16.15 |
+| 30 | 17.41 | 17.98 | 14.97 |
+| 40 | 16.95 | 17.49 | 13.71 |
+
+### Observations
+
+- Linear Regression improves as the window size increases, suggesting that temporal context helps even simple models.
+- Random Forest performance remains relatively stable across window sizes.
+- XGBoost shows significant improvement when larger windows are used.
+
+## Issue Identified: Data Leakage
+
+During analysis we discovered a potential data leakage issue in the current experimental setup.
+
+Sliding windows were generated from the entire dataset and then split using a random train/test split:
+
+train_test_split(X, y)
+
+However, multiple windows originate from the same engine sequence. This means windows from the same engine may appear in both the training and testing sets.
+
+Example:
+
+train → engine1 cycles [1..30]  
+test  → engine1 cycles [2..31]
+
+Because these windows share overlapping sensor information, the model can indirectly learn patterns from the same engine in both training and testing, leading to overly optimistic evaluation results.
+
+## Planned Fix
+
+To remove this leakage, the data pipeline will be corrected in the next phase.
+
+The corrected pipeline will be:
+
+split engines first  
+↓  
+generate sliding windows per engine  
+↓  
+train models  
+
+This ensures that all windows from a given engine appear exclusively in either the training or testing dataset.
+
+A new notebook will implement this corrected pipeline and re-run the experiments with proper data separation.
+
+--------------------------------------------------
 
 ## Repository Structure
 
