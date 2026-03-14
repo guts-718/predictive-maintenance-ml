@@ -247,6 +247,61 @@ This ensures that all windows from a given engine appear exclusively in either t
 A new notebook will implement this corrected pipeline and re-run the experiments with proper data separation.
 
 --------------------------------------------------
+## Sliding Window Experiment (Corrected Pipeline)
+
+After identifying the data leakage issue in the initial experiment, the sliding window pipeline was corrected.  
+Instead of splitting the dataset after generating windows, the engines were split first and windows were generated separately for the training and testing sets.
+
+Correct pipeline:
+
+split engines  
+↓  
+generate sliding windows per engine  
+↓  
+train models  
+
+This guarantees that all windows from a particular engine appear exclusively in either the training or testing dataset.
+
+### Window Sizes Tested
+
+The following window sizes were evaluated:
+
+{5, 10, 20, 30, 40}
+
+Each window represents a sequence of sensor readings across multiple engine cycles.  
+The target is the Remaining Useful Life (RUL) at the final timestep of the window.
+
+### Results (No Data Leakage)
+
+| Window | LinearRegression | RandomForest | XGBoost |
+|------|------|------|------|
+| 5 | 19.86 | 16.29 | 16.13 |
+| 10 | 19.33 | 16.35 | 15.98 |
+| 20 | 17.24 | 16.39 | 14.71 |
+| 30 | 15.94 | 16.15 | 13.67 |
+| 40 | 15.15 | 15.82 | 12.89 |
+
+### Observations
+
+- Increasing the window size improves performance for all models.
+- Linear Regression benefits from longer temporal context.
+- Random Forest shows modest improvement.
+- XGBoost shows the largest improvement and achieves the best performance.
+
+The best result was obtained using:
+
+window size = 40  
+XGBoost RMSE ≈ 12.89
+
+### Selected Window Size
+
+Based on these experiments, a **window size of 40 cycles** was selected for the remainder of the project.
+
+This window length provides sufficient temporal context for capturing degradation patterns while still keeping the feature space manageable.
+
+All subsequent models (ANN, LSTM, GRU) will use this window size.
+
+-----------------------------------------------
 
 ## Repository Structure
 
@@ -267,6 +322,11 @@ predictive-maintenance/
 │   ├── 01_data_preparation.ipynb
 │   ├── 02_sensor_analysis.ipynb
 │   └── 03_baseline_models.ipynb
+|   └── 04_window_generation.ipynb
+|   └── 05_window_model_training.ipynb
+|   └── 06_window_pipeline_no_leak.ipynb
+|   └── 07_window_models_no_leak.ipynb
+|
 │
 ├── pic_outputs
 ├── results
@@ -279,7 +339,6 @@ predictive-maintenance/
 
 ## Future Work
 
--   Sequence generation using sliding windows
 -   LSTM and GRU models for time series prediction
 -   Comparison with classical ML models
 -   Model evaluation and visualization
