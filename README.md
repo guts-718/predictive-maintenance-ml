@@ -303,6 +303,10 @@ All subsequent models (ANN, LSTM, GRU) will use this window size.
 
 -----------------------------------------------
 
+
+## Searching for best window size :
+Performance continued to improve with larger window sizes, but the gains beyond a certain point became marginal. A window size of 60 was selected as a trade off between model performance and feature complexity.
+
 ## Repository Structure
 
 ## Project Structure

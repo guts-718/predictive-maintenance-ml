@@ -6,3 +6,4 @@ __pycache__/
 .ipynb_checkpoints/
 
 data/processed/windows/
+data/processed/windows_no_leak
