@@ -307,6 +307,63 @@ All subsequent models (ANN, LSTM, GRU) will use this window size.
 ## Searching for best window size :
 Performance continued to improve with larger window sizes, but the gains beyond a certain point became marginal. A window size of 60 was selected as a trade off between model performance and feature complexity.
 
+
+## Artificial Neural Network (ANN)
+
+A feedforward neural network was trained on the windowed dataset using a window size of 60.
+
+Each input sample consists of flattened sensor values across 60 cycles (10 sensors × 60 = 600 features). The model learns nonlinear relationships across time steps.
+
+### Model Architecture
+
+- Input layer: 600 features
+- Hidden layers:
+  - 256 → ReLU → BatchNorm → Dropout
+  - 128 → ReLU → BatchNorm → Dropout
+  - 64 → ReLU
+- Output layer: 1 (RUL prediction)
+
+### Training Details
+
+- Optimizer: Adam
+- Learning rate: 0.0005
+- Loss function: Mean Squared Error (MSE)
+- Epochs: 50
+- Batch size: 128
+
+### Training Behavior
+
+Example training loss (final epochs):
+
+Epoch 41, Loss: 1.6633  
+Epoch 42, Loss: 1.4556  
+Epoch 43, Loss: 0.9165  
+Epoch 44, Loss: 0.8818  
+Epoch 45, Loss: 1.1119  
+Epoch 46, Loss: 2.8022  
+Epoch 47, Loss: 1.2234  
+Epoch 48, Loss: 1.5936  
+Epoch 49, Loss: 0.9763  
+Epoch 50, Loss: 2.5381  
+
+The fluctuations are due to mini-batch training and dropout, but the overall trend shows convergence.
+
+### Result
+
+ANN RMSE ≈ 11.66
+
+### Observations
+
+- The ANN significantly improves over earlier baseline models.
+- It performs better than tree-based models such as Random Forest and XGBoost in this setup.
+- This indicates that neural networks can better capture nonlinear relationships across time when sufficient temporal context is provided.
+
+However, the ANN still operates on a flattened representation of time, meaning temporal dependencies are not explicitly modeled.
+
+This motivates the use of sequence models such as LSTM and GRU, which are designed to learn from sequential data directly.
+
+
+----------------
 ## Repository Structure
 
 ## Project Structure
