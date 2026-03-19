@@ -364,6 +364,46 @@ This motivates the use of sequence models such as LSTM and GRU, which are design
 
 
 ----------------
+
+
+## LSTM (Sequence Model)
+
+An LSTM model was trained to explicitly capture temporal dependencies in the sensor data.
+
+Unlike previous models, the input was treated as a sequence of sensor readings:
+
+- Input shape: (window size = 60, sensors = 10)
+- Each timestep represents one engine cycle
+
+### Model
+
+- LSTM layers: 2
+- Hidden size: 128
+- Dropout: 0.2
+- Fully connected output layer
+
+### Training
+
+- Optimizer: Adam
+- Learning rate: 0.0005
+- Epochs: 40
+- Loss: MSE
+
+### Result
+
+LSTM RMSE ≈ 13.06
+
+### Observations
+
+- Performance improved compared to the initial LSTM setup.
+- However, the LSTM did not outperform the ANN.
+
+This suggests that the sliding window representation already provides strong temporal features, allowing simpler models like ANN to perform competitively without explicitly modeling sequences.
+
+It also highlights that sequence models require careful tuning and may not always outperform well-engineered feature-based approaches.
+
+------------
+ 
 ## Repository Structure
 
 ## Project Structure
