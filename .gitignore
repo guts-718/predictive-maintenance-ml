@@ -4,3 +4,5 @@ notes_for_me
 venv/
 __pycache__/
 .ipynb_checkpoints/
+
+data/processed/windows/
